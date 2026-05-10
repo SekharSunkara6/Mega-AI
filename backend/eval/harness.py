@@ -31,11 +31,12 @@ def run_eval(trigger: str = "manual", failed_ids: list = None, rewrite_id: str =
         context = SharedContext(job_id=str(uuid.uuid4()), original_query=tc.query)
 
         try:
+            import signal
             context = run_orchestrator(context)
             final_answer = context.final_answer or ""
         except Exception as e:
             log.error("eval_case_error", id=tc.id, error=str(e))
-            final_answer = ""
+            final_answer = f"Error: {str(e)[:100]}"
 
         scores = score_all(tc, context, final_answer)
 
