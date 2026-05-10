@@ -1,0 +1,57 @@
+services:
+  - type: web
+    name: mega-ai-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: PYTHONPATH
+        value: /app
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mega-ai-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: mega-ai-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: LOG_LEVEL
+        value: INFO
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+  - type: redis
+    name: mega-ai-redis
+    plan: free
+    maxmemoryPolicy: noeviction
+
+  - type: worker
+    name: mega-ai-worker
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: PYTHONPATH
+        value: /app
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mega-ai-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: mega-ai-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+    startCommand: celery -A worker worker --loglevel=info
+
+databases:
+  - name: mega-ai-db
+    plan: free
