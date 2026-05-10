@@ -272,6 +272,25 @@ def review_rewrite(req: ApprovalRequest, db: Session = Depends(get_db)):
         "message": f"Rewrite {'approved — trigger /eval/rerun to test it' if req.approved else 'rejected'}",
     }
 
+@app.post("/eval/run", summary="Trigger a fresh eval run directly")
+def trigger_fresh_eval(db: Session = Depends(get_db)):
+    import threading
+    from eval.harness import run_eval
+
+    def run_in_background():
+        try:
+            run_eval(trigger="manual")
+        except Exception as e:
+            log.error("eval_failed", error=str(e))
+
+    thread = threading.Thread(target=run_in_background, daemon=True)
+    thread.start()
+
+    return {
+        "message": "Eval started in background",
+        "status": "running",
+        "note": "Click Refresh in 3-5 minutes to see results"
+    }
 
 # ─── ENDPOINT 5: Trigger targeted re-eval ─────────────────────────────────────
 
