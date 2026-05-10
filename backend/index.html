@@ -236,13 +236,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function renderQuickQueries() {
   const wrap = document.getElementById('quick-queries');
-  wrap.innerHTML = QUICK.map(q =>
-    `<button class="quick-btn" onclick="setQuery(${JSON.stringify(q)})">${q.length > 40 ? q.slice(0,37)+'...' : q}</button>`
-  ).join('');
+  wrap.innerHTML = '';
+  QUICK.forEach(q => {
+    const btn = document.createElement('button');
+    btn.className = 'quick-btn';
+    btn.textContent = q.length > 40 ? q.slice(0,37)+'...' : q;
+    btn.addEventListener('click', () => setQuery(q));
+    wrap.appendChild(btn);
+  });
 }
 
 function setQuery(q) {
-  document.getElementById('query-input').value = q;
+  const ta = document.getElementById('query-input');
+  ta.value = q;
+  ta.focus();
 }
 
 function switchTab(tab) {
@@ -330,8 +337,15 @@ function updateRouteStatus(agent, status) {
 function showFinalAnswer(data) {
   document.getElementById('answer-wrap').style.display = 'block';
   document.getElementById('answer-text').textContent = data.final_answer || '(no answer)';
-  currentJobId = data.job_id;
-  document.getElementById('trace-job-id').value = data.job_id || '';
+  if(data.job_id) {
+    currentJobId = data.job_id;
+    document.getElementById('trace-job-id').value = data.job_id;
+  }
+  // Show job ID in answer section
+  const label = document.querySelector('.answer-label');
+  if(label && data.job_id) {
+    label.innerHTML = `Final Answer <span style="font-size:10px;color:var(--text3);margin-left:8px;font-weight:400">Job: ${data.job_id.slice(0,8)}...</span>`;
+  }
 }
 
 async function submitQuery() {
@@ -364,6 +378,7 @@ async function submitQuery() {
     const decoder = new TextDecoder();
     let buffer = '';
 
+    let jobDone = false;
     while(true) {
       const {done, value} = await reader.read();
       if(done) break;
@@ -373,24 +388,49 @@ async function submitQuery() {
       for(const line of lines) {
         if(line.startsWith('data:')) {
           try {
-            const parsed = JSON.parse(line.slice(5).trim());
+            const raw = line.slice(5).trim();
+            if(!raw) continue;
+            const parsed = JSON.parse(raw);
             if(parsed.status === 'running') continue;
-            addEvent(parsed);
-            if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
-            if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
             if(parsed.event === 'job_complete') {
+              jobDone = true;
               showFinalAnswer(parsed);
+              addEvent({agent:'system', event:'job_complete',
+                data:`✓ Done! Job ID: ${parsed.job_id} — copy this for Trace Explorer`});
               document.getElementById('nav-status-text').textContent = 'Done';
               document.getElementById('feed-status').textContent = '✓ Completed';
-            }
-            if(parsed.event === 'job_failed') {
+              // Auto-fill trace job ID
+              if(parsed.job_id) {
+                document.getElementById('trace-job-id').value = parsed.job_id;
+                currentJobId = parsed.job_id;
+              }
+            } else if(parsed.event === 'job_failed') {
               addEvent({agent:'system', event:'error', data: parsed.error||'Job failed'});
               document.getElementById('nav-status-text').textContent = 'Failed';
               document.getElementById('feed-status').textContent = '✗ Failed';
+            } else if(parsed.event !== 'heartbeat') {
+              addEvent(parsed);
+              if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
+              if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
             }
           } catch(e) {}
         }
       }
+    }
+    // If stream ended without job_complete, poll for result
+    if(!jobDone && currentJobId) {
+      try {
+        const tr = await fetch(`${API}/trace/${currentJobId}`);
+        if(tr.ok) {
+          const data = await tr.json();
+          if(data.final_answer) {
+            showFinalAnswer({job_id: currentJobId, final_answer: data.final_answer});
+            addEvent({agent:'system', event:'job_complete',
+              data:`✓ Done! Job ID: ${currentJobId}`});
+            document.getElementById('feed-status').textContent = '✓ Completed';
+          }
+        }
+      } catch(e) {}
     }
   } catch(err) {
     addEvent({agent:'system', event:'error', data:`Connection error: ${err.message}. Server may be waking up — wait 30 seconds and try again.`});
