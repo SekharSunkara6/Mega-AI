@@ -458,13 +458,20 @@ function clearFeed() {
 }
 
 async function loadEval() {
+  const refreshBtn = document.querySelector('[onclick="loadEval()"]');
+  if(refreshBtn) { refreshBtn.textContent = 'Loading...'; refreshBtn.disabled = true; }
   try {
-    const resp = await fetch(`${API}/eval/latest`);
-    if(!resp.ok) { document.getElementById('eval-scores').innerHTML = '<div style="font-size:13px;color:var(--text3)">No eval data. Click Run Eval.</div>'; return; }
+    const resp = await fetch(`${API}/eval/latest?t=${Date.now()}`);
+    if(!resp.ok) {
+      document.getElementById('eval-scores').innerHTML = '<div style="font-size:13px;color:var(--text3)">No eval data. Click Run Eval.</div>';
+      return;
+    }
     const data = await resp.json();
     renderEvalScores(data);
   } catch(e) {
     document.getElementById('eval-scores').innerHTML = `<div style="color:var(--red);font-size:13px">Error: ${e.message}</div>`;
+  } finally {
+    if(refreshBtn) { refreshBtn.textContent = '↻ Refresh'; refreshBtn.disabled = false; }
   }
 }
 

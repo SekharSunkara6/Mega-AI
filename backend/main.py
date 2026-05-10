@@ -125,13 +125,20 @@ async def submit_query(req: QueryRequest, db: Session = Depends(get_db)):
         except Exception as e:
             log.error("db_save_error", error=str(e))
 
-        yield {"event": "job_complete", "data": json.dumps({
+        complete_data = {
             "job_id": job_id,
             "final_answer": final_context.final_answer,
             "provenance_entries": len(final_context.provenance_map),
             "policy_violations": final_context.policy_violations,
             "budget_remaining": final_context.budget_remaining,
+        }
+        # Send twice to ensure frontend receives it
+        yield {"event": "agent_update", "data": json.dumps({
+            "agent": "system",
+            "event": "job_complete",
+            **complete_data
         })}
+        yield {"event": "job_complete", "data": json.dumps(complete_data)}
 
     return EventSourceResponse(event_generator(), ping=15)
 

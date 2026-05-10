@@ -21,8 +21,8 @@ def run_eval(trigger: str = "manual", failed_ids: list = None, rewrite_id: str =
     db.commit()
     log.info("eval_run_started", run_id=run_id, trigger=trigger)
 
-    cases = TEST_CASES
-    if failed_ids:
+    cases = TEST_CASES  # always run all 15
+    if failed_ids and len(failed_ids) > 0:
         cases = [tc for tc in TEST_CASES if tc.id in failed_ids]
 
     results = []
