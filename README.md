@@ -48,27 +48,27 @@ Mega AI is a containerized, production-grade multi-agent LLM orchestration syste
 ## 🏗️ Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────── ┐
-│                    🌐 Frontend Dashboard                        │
-│           Query Pipeline · Evaluation · Trace Explorer          │
+┌─────────────────────────────────────────────────────────────────┐
+│                    🌐 Frontend Dashboard                         │
+│           Query Pipeline · Evaluation · Trace Explorer           │
 └────────────────────────────┬────────────────────────────────────┘
                              │ HTTP / SSE
 ┌────────────────────────────▼────────────────────────────────────┐
-│                   ⚡ FastAPI  (5 Endpoints)                     |
+│                   ⚡ FastAPI  (5 Endpoints)                      │
 │   /query  /trace/{id}  /eval/latest  /rewrite  /eval/rerun      │
 └────────────────────────────┬────────────────────────────────────┘
                              │ Celery + Redis (async jobs)
 ┌────────────────────────────▼────────────────────────────────────┐
-│                 🎯 Master Orchestrator Agent                    │
-│   Reads query → structured JSON routing plan → mediates handoffs│
-│   Never hardcoded · logs justification for every decision       │
+│                 🎯 Master Orchestrator Agent                      │
+│   Reads query → structured JSON routing plan → mediates handoffs │
+│   Never hardcoded · logs justification for every decision        │
 └──┬──────────────┬──────────────┬──────────────┬─────────────────┘
    │              │              │              │
    │        Shared Context Object (Pydantic Schema)
    │        Agents NEVER call each other directly
    │              │              │              │
 ┌──▼──────┐ ┌────▼─────┐ ┌─────▼────┐ ┌──────▼──────┐
-│🔀 Decomp│ │ 🔍 RAG   │ │ 🔎 Crit- │ │ 🔗 Synth- │
+│🔀 Decomp│ │ 🔍 RAG   │ │ 🔎 Crit- │ │ 🔗 Synth-   │
 │  Agent  │ │  Agent   │ │   ique   │ │   esis      │
 │         │ │          │ │  Agent   │ │  Agent      │
 │Sub-tasks│ │ 2+ hop   │ │  Claim   │ │ Provenance  │
@@ -77,8 +77,8 @@ Mega AI is a containerized, production-grade multi-agent LLM orchestration syste
 └─────────┘ └──────────┘ └──────────┘ └─────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│                        🛠️ 4 Tools                              │
-│                                                                 │
+│                        🛠️ 4 Tools                               │
+│                                                                  │
 │  🔎 web_search    Structured results + URLs + relevance scores   │
 │  💻 code_sandbox  Python exec → stdout, stderr, exit code        │
 │  🗄️ db_lookup     Natural language → SQL → PostgreSQL            │
@@ -89,7 +89,7 @@ Mega AI is a containerized, production-grade multi-agent LLM orchestration syste
 └────────────────────────────┬────────────────────────────────────┘
                              │
 ┌──────────────┬─────────────▼────────────┬────────────────────────┐
-│ 📊 Context   │   📈 Eval Pipeline        │  🧠 Meta-Agent      │
+│ 📊 Context   │   📈 Eval Pipeline        │  🧠 Meta-Agent         │
 │ Budget Mgr   │                          │                        │
 │              │  15 test cases           │  Reads failures        │
 │ Token track  │  6 scoring dimensions    │  Proposes rewrites     │
@@ -99,7 +99,7 @@ Mega AI is a containerized, production-grade multi-agent LLM orchestration syste
 └──────────────┴──────────────────────────┴────────────────────────┘
                              │
 ┌────────────────────────────▼────────────────────────────────────┐
-│              🗄️ PostgreSQL · 📮 Redis · 📋 Seq Logs            │
+│              🗄️ PostgreSQL · 📮 Redis · 📋 Seq Logs             │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
