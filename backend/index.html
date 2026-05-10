@@ -503,6 +503,11 @@ async function submitQuery() {
       body: JSON.stringify({query})
     });
 
+    if (!resp.ok) {
+      addEvent({agent:'system', event:'error', data: `HTTP ${resp.status}`});
+      return;
+    }
+
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
@@ -510,6 +515,7 @@ async function submitQuery() {
     while(true) {
       const {done, value} = await reader.read();
       if(done) break;
+
       buffer += decoder.decode(value, {stream:true});
       const lines = buffer.split('\n');
       buffer = lines.pop();
@@ -518,29 +524,34 @@ async function submitQuery() {
         if(line.startsWith('data:')) {
           try {
             const parsed = JSON.parse(line.slice(5).trim());
+            // Skip heartbeats
+            if(parsed.status === 'running') continue;
             addEvent(parsed);
             if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
             if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
             if(parsed.event === 'job_complete') {
               showFinalAnswer(parsed);
               document.getElementById('nav-status-text').textContent = 'Done';
-              document.getElementById('feed-status').textContent = `✓ Completed`;
+              document.getElementById('feed-status').textContent = '✓ Completed';
             }
             if(parsed.event === 'job_failed') {
               addEvent({agent:'system', event:'error', data: parsed.error || 'Job failed'});
               document.getElementById('nav-status-text').textContent = 'Failed';
+              document.getElementById('feed-status').textContent = '✗ Failed';
             }
-          } catch(e) {}
+          } catch(e) {
+            // skip malformed lines
+          }
         }
       }
     }
   } catch(err) {
-    addEvent({agent:'system', event:'error', data: err.message});
+    addEvent({agent:'system', event:'error', data: `Connection error: ${err.message}. The server may be waking up — try again in 30 seconds.`});
   } finally {
     btn.disabled = false;
     btn.textContent = 'Run Pipeline';
+    document.getElementById('nav-status-text').textContent = 'Ready';
   }
-}
 
 function clearFeed() {
   document.getElementById('feed').innerHTML = '<div class="empty"><div class="empty-icon">⚡</div><div>Submit a query to start the pipeline</div></div>';

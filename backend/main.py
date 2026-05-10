@@ -53,48 +53,87 @@ async def submit_query(req: QueryRequest, db: Session = Depends(get_db)):
     log.info("job_created", job_id=job_id, query=req.query[:80])
 
     async def event_generator():
-        # Kick off the Celery task
-        task = process_job_task.delay(job_id, req.query)
-
         yield {"event": "job_started", "data": json.dumps({
             "job_id": job_id,
             "query": req.query,
             "message": "Pipeline started"
         })}
 
-        # Poll Redis pub/sub for SSE events from the worker
-        import redis.asyncio as aioredis
-        r = await aioredis.from_url(settings.redis_url)
-        pubsub = r.pubsub()
-        await pubsub.subscribe(f"job:{job_id}")
+        from agents.orchestrator import run_orchestrator
+        from schemas.context import SharedContext
 
+        context = SharedContext(job_id=job_id, original_query=req.query)
+        collected_events = []
+
+        def sync_callback(event_data: dict):
+            collected_events.append(event_data)
+
+        import concurrent.futures
+        import asyncio
+
+        loop = asyncio.get_event_loop()
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+
+        future = loop.run_in_executor(
+            executor,
+            lambda: run_orchestrator(context, stream_callback=sync_callback)
+        )
+
+        # Keep streaming events while pipeline runs
+        last_sent = 0
+        while not future.done():
+            await asyncio.sleep(0.3)
+            while last_sent < len(collected_events):
+                event = collected_events[last_sent]
+                last_sent += 1
+                yield {
+                    "event": event.get("event", "agent_update"),
+                    "data": json.dumps(event)
+                }
+            # Send heartbeat to keep connection alive
+            yield {
+                "event": "heartbeat",
+                "data": json.dumps({"status": "running"})
+            }
+
+        # Flush remaining events
         try:
-            timeout = 120  # 2 minutes max
-            elapsed = 0
-            async for message in pubsub.listen():
-                if message["type"] == "message":
-                    data = message["data"]
-                    if isinstance(data, bytes):
-                        data = data.decode()
-                    parsed = json.loads(data)
+            final_context = await future
+        except Exception as e:
+            yield {"event": "job_failed", "data": json.dumps({
+                "job_id": job_id, "error": str(e)
+            })}
+            job.status = "failed"
+            db.commit()
+            return
 
-                    yield {"event": parsed.get("event", "agent_update"),
-                           "data": json.dumps(parsed)}
+        while last_sent < len(collected_events):
+            event = collected_events[last_sent]
+            last_sent += 1
+            yield {
+                "event": event.get("event", "agent_update"),
+                "data": json.dumps(event)
+            }
 
-                    if parsed.get("event") in ("job_complete", "job_failed"):
-                        break
+        # Save to DB
+        try:
+            job.status = "done"
+            job.final_answer = final_context.final_answer
+            job.provenance_map = [p.model_dump() for p in final_context.provenance_map]
+            job.completed_at = datetime.utcnow()
+            db.commit()
+        except Exception as e:
+            log.error("db_save_error", error=str(e))
 
-                await asyncio.sleep(0.05)
-                elapsed += 0.05
-                if elapsed > timeout:
-                    yield {"event": "timeout", "data": json.dumps({"job_id": job_id, "message": "Job timed out"})}
-                    break
-        finally:
-            await pubsub.unsubscribe(f"job:{job_id}")
-            await r.aclose()
+        yield {"event": "job_complete", "data": json.dumps({
+            "job_id": job_id,
+            "final_answer": final_context.final_answer,
+            "provenance_entries": len(final_context.provenance_map),
+            "policy_violations": final_context.policy_violations,
+            "budget_remaining": final_context.budget_remaining,
+        })}
 
-    return EventSourceResponse(event_generator())
-
+    return EventSourceResponse(event_generator(), ping=15)
 
 # ─── ENDPOINT 2: Get full execution trace ─────────────────────────────────────
 
