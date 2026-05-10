@@ -67,6 +67,24 @@ async def submit_query(req: QueryRequest, db: Session = Depends(get_db)):
 
         def sync_callback(event_data: dict):
             collected_events.append(event_data)
+            # Log to DB
+            try:
+                from database import SessionLocal
+                import hashlib
+                cb_db = SessionLocal()
+                entry = AgentLog(
+                    job_id=job_id,
+                    agent_id=event_data.get("agent", "system"),
+                    event_type=event_data.get("event", "update"),
+                    output_data=event_data,
+                    token_count=event_data.get("token_count", 0),
+                    latency_ms=0.0,
+                )
+                cb_db.add(entry)
+                cb_db.commit()
+                cb_db.close()
+            except Exception:
+                pass
 
         import concurrent.futures
         import asyncio
@@ -116,12 +134,18 @@ async def submit_query(req: QueryRequest, db: Session = Depends(get_db)):
             }
 
         # Save to DB
+        # Save to DB — use fresh session
         try:
-            job.status = "done"
-            job.final_answer = final_context.final_answer
-            job.provenance_map = [p.model_dump() for p in final_context.provenance_map]
-            job.completed_at = datetime.utcnow()
-            db.commit()
+            from database import SessionLocal
+            fresh_db = SessionLocal()
+            fresh_job = fresh_db.query(Job).filter(Job.id == job_id).first()
+            if fresh_job:
+                fresh_job.status = "done"
+                fresh_job.final_answer = final_context.final_answer
+                fresh_job.provenance_map = [p.model_dump() for p in final_context.provenance_map]
+                fresh_job.completed_at = datetime.utcnow()
+                fresh_db.commit()
+            fresh_db.close()
         except Exception as e:
             log.error("db_save_error", error=str(e))
 
