@@ -22,17 +22,19 @@ services:
         generateValue: true
       - key: LOG_LEVEL
         value: INFO
-    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
 
   - type: redis
     name: mega-ai-redis
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList:
+      - source: 0.0.0.0/0
+        description: allow all
 
   - type: worker
     name: mega-ai-worker
     runtime: docker
-    dockerfilePath: ./backend/Dockerfile
+    dockerfilePath: ./backend/Dockerfile.worker
     dockerContext: ./backend
     envVars:
       - key: PYTHONPATH
@@ -50,7 +52,6 @@ services:
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
-    startCommand: celery -A worker worker --loglevel=info
 
 databases:
   - name: mega-ai-db
