@@ -1,4 +1,4 @@
-from llm_client import chat
+from llm_client import chat, extract_json
 from eval.test_cases import TestCase
 from schemas.context import SharedContext
 import json
@@ -11,11 +11,7 @@ Score is 0.0 to 1.0. Justification must be specific — not just a number."""
 def _llm_score(dimension_prompt: str) -> tuple[float, str]:
     try:
         raw = chat(SCORER_SYSTEM, dimension_prompt, max_tokens=200)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+        data = json.loads(extract_json(raw))
         return float(data["score"]), str(data["justification"])
     except Exception as e:
         return 0.0, f"Scoring error: {e}"

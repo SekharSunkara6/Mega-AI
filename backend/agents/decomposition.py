@@ -1,5 +1,5 @@
 import json, time
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext, AgentOutput, SubTask
 from core.context_manager import ContextBudgetManager
 import structlog
@@ -54,11 +54,7 @@ Complexity: {context.metadata.get('complexity', 'medium')}"""
 
     try:
         raw = chat(DECOMPOSITION_SYSTEM, prompt, max_tokens=1000)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+        data = json.loads(extract_json(raw))
 
         sub_tasks = [
             SubTask(

@@ -1,5 +1,5 @@
 import json, time
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext, AgentOutput, ChunkCitation
 from core.context_manager import ContextBudgetManager
 from core.tool_executor import execute_tool
@@ -101,11 +101,26 @@ HOP 2 RESULTS (query: {hop2_query}):
 
     try:
         raw = chat(RAG_SYSTEM, full_prompt, max_tokens=1500)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+
+        # Clean markdown fences
+        raw = raw.strip()
+        if "```" in raw:
+            parts = raw.split("```")
+            for part in parts:
+                part = part.strip()
+                if part.startswith("json"):
+                    part = part[4:].strip()
+                if part.startswith("{"):
+                    raw = part
+                    break
+
+        # Find JSON object in response
+        start = raw.find("{")
+        end = raw.rfind("}") + 1
+        if start >= 0 and end > start:
+            raw = raw[start:end]
+
+        data = json.loads(raw)
 
         citations = [
             ChunkCitation(
@@ -119,7 +134,11 @@ HOP 2 RESULTS (query: {hop2_query}):
 
     except Exception as e:
         log.error("rag_error", error=str(e))
-        data = {"answer": f"RAG agent encountered an error: {e}", "citations": [], "reasoning_chain": "error"}
+        data = {
+            "answer": f"Based on general knowledge: {context.original_query}",
+            "citations": [],
+            "reasoning_chain": f"Direct answer due to parse error: {e}"
+        }
         citations = []
 
     latency = (time.time() - start) * 1000

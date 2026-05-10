@@ -1,5 +1,5 @@
 import json, time, uuid
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext, AgentOutput
 from core.context_manager import ContextBudgetManager
 from core.tool_executor import execute_tool
@@ -60,12 +60,7 @@ def run_orchestrator(context: SharedContext, stream_callback=None) -> SharedCont
     try:
         raw = chat(ORCHESTRATOR_SYSTEM, prompt, max_tokens=1000)
 
-        # Strip markdown fences if present
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        plan = json.loads(raw.strip())
+        plan = json.loads(extract_json(raw))
 
     except (json.JSONDecodeError, Exception) as e:
         log.error("orchestrator_parse_error", error=str(e))

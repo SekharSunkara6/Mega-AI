@@ -1,5 +1,5 @@
 import json
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext
 from core.context_manager import count_tokens
 import structlog

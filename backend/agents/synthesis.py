@@ -1,5 +1,5 @@
 import json, time
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext, AgentOutput, ProvenanceEntry
 from core.context_manager import ContextBudgetManager
 import structlog
@@ -72,11 +72,7 @@ Produce the final answer. Resolve ALL contradictions. Map every sentence to its 
 
     try:
         raw = chat(SYNTHESIS_SYSTEM, prompt, max_tokens=1500)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+        data = json.loads(extract_json(raw))
 
         context.final_answer = data.get("final_answer", "")
         context.provenance_map = [

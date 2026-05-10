@@ -1,5 +1,5 @@
 import json, time
-from llm_client import chat
+from llm_client import chat, extract_json
 from schemas.context import SharedContext, AgentOutput, CritiqueResult, ClaimScore
 from core.context_manager import ContextBudgetManager
 import structlog
@@ -79,11 +79,7 @@ Review each agent's output at the claim level. Flag specific spans. Check for co
 
     try:
         raw = chat(CRITIQUE_SYSTEM, prompt, max_tokens=1500)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+        data = json.loads(extract_json(raw))
 
         critique_results = []
         for review in data.get("reviews", []):

@@ -1,5 +1,5 @@
 import json
-from llm_client import chat
+from llm_client import chat, extract_json
 from database import SessionLocal
 from models.eval import EvalRun, EvalResult
 from models.prompt import PromptRewrite
@@ -79,11 +79,7 @@ Current agent scores by dimension:
 Propose a prompt rewrite to fix the worst-performing agent."""
 
         raw = chat(META_SYSTEM, prompt, max_tokens=1200)
-        if raw.startswith("```"):
-            raw = raw.split("```")[1]
-            if raw.startswith("json"):
-                raw = raw[4:]
-        data = json.loads(raw.strip())
+        data = json.loads(extract_json(raw))
 
         # Import current prompt from the identified agent
         agent_prompts = _get_agent_prompts()
