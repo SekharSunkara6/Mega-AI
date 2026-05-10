@@ -1,6 +1,5 @@
 import json, time
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext, AgentOutput, ChunkCitation
 from core.context_manager import ContextBudgetManager
 from core.tool_executor import execute_tool
@@ -8,7 +7,6 @@ from tools.web_search import web_search
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 RAG_SYSTEM = """You are a retrieval-augmented reasoning agent. You perform multi-hop reasoning across retrieved chunks.
 
@@ -102,13 +100,7 @@ HOP 2 RESULTS (query: {hop2_query}):
     budget.consume("rag", full_prompt)
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1500,
-            system=RAG_SYSTEM,
-            messages=[{"role": "user", "content": full_prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(RAG_SYSTEM, full_prompt, max_tokens=1500)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):

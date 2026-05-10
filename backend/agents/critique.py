@@ -1,12 +1,10 @@
 import json, time
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext, AgentOutput, CritiqueResult, ClaimScore
 from core.context_manager import ContextBudgetManager
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 CRITIQUE_SYSTEM = """You are a critique agent. Your job is to review agent outputs and score individual claims — NOT the output as a whole.
 
@@ -80,13 +78,7 @@ Review each agent's output at the claim level. Flag specific spans. Check for co
     start = time.time()
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1500,
-            system=CRITIQUE_SYSTEM,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(CRITIQUE_SYSTEM, prompt, max_tokens=1500)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):

@@ -28,13 +28,11 @@ def compress_context(context: SharedContext, agent_id: str) -> SharedContext:
     }
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=800,
-            system=COMPRESSION_SYSTEM,
-            messages=[{"role": "user", "content": f"Compress this context for agent {agent_id}:\n{json.dumps(compressible)}"}]
+        compressed_text = chat(
+            COMPRESSION_SYSTEM,
+            f"Compress this context for agent {agent_id}:\n{json.dumps(compressible)}",
+            max_tokens=800
         )
-        compressed_text = response.content[0].text.strip()
         # Store compressed summary in metadata
         context.metadata[f"compressed_for_{agent_id}"] = compressed_text
         log.info("compression_done", agent=agent_id, saved_tokens=count_tokens(json.dumps(compressible)) - count_tokens(compressed_text))

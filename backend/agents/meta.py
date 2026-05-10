@@ -1,13 +1,11 @@
 import json
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from database import SessionLocal
 from models.eval import EvalRun, EvalResult
 from models.prompt import PromptRewrite
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 META_SYSTEM = """You are a meta-agent that improves prompts by analyzing evaluation failures.
 
@@ -80,13 +78,7 @@ Current agent scores by dimension:
 
 Propose a prompt rewrite to fix the worst-performing agent."""
 
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1200,
-            system=META_SYSTEM,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(META_SYSTEM, prompt, max_tokens=1200)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):

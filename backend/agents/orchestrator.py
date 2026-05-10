@@ -1,6 +1,5 @@
 import json, time, uuid
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext, AgentOutput
 from core.context_manager import ContextBudgetManager
 from core.tool_executor import execute_tool
@@ -11,7 +10,6 @@ from tools.self_reflection import self_reflect
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 ORCHESTRATOR_SYSTEM = """You are a master orchestrator agent. Given a user query, you decide which sub-agents to invoke, in what order, and why.
 
@@ -60,13 +58,7 @@ def run_orchestrator(context: SharedContext, stream_callback=None) -> SharedCont
         stream_callback({"agent": "orchestrator", "event": "start", "data": "Analyzing query and planning agent routing..."})
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1000,
-            system=ORCHESTRATOR_SYSTEM,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(ORCHESTRATOR_SYSTEM, prompt, max_tokens=1000)
 
         # Strip markdown fences if present
         if raw.startswith("```"):

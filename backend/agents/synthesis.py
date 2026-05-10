@@ -1,12 +1,10 @@
 import json, time
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext, AgentOutput, ProvenanceEntry
 from core.context_manager import ContextBudgetManager
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 SYNTHESIS_SYSTEM = """You are a synthesis agent. You merge all agent outputs, resolve contradictions flagged by the critique agent, and produce a final answer.
 
@@ -73,13 +71,7 @@ Produce the final answer. Resolve ALL contradictions. Map every sentence to its 
     start = time.time()
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=2000,
-            system=SYNTHESIS_SYSTEM,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(SYNTHESIS_SYSTEM, prompt, max_tokens=1500)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):

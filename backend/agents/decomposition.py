@@ -1,12 +1,10 @@
 import json, time
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext, AgentOutput, SubTask
 from core.context_manager import ContextBudgetManager
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 DECOMPOSITION_SYSTEM = """You are a decomposition agent. Break the given query into typed sub-tasks with explicit dependency graphs.
 
@@ -55,13 +53,7 @@ Complexity: {context.metadata.get('complexity', 'medium')}"""
     start = time.time()
 
     try:
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1000,
-            system=DECOMPOSITION_SYSTEM,
-            messages=[{"role": "user", "content": prompt}]
-        )
-        raw = response.content[0].text.strip()
+        raw = chat(DECOMPOSITION_SYSTEM, prompt, max_tokens=1000)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):

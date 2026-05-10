@@ -1,10 +1,7 @@
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from eval.test_cases import TestCase
 from schemas.context import SharedContext
 import json
-
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 SCORER_SYSTEM = """You are an evaluation scorer. Score a single dimension of an AI system's answer.
 Respond ONLY with valid JSON: {"score": 0.85, "justification": "specific reason"}
@@ -13,13 +10,7 @@ Score is 0.0 to 1.0. Justification must be specific — not just a number."""
 
 def _llm_score(dimension_prompt: str) -> tuple[float, str]:
     try:
-        resp = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=200,
-            system=SCORER_SYSTEM,
-            messages=[{"role": "user", "content": dimension_prompt}]
-        )
-        raw = resp.content[0].text.strip()
+        raw = chat(SCORER_SYSTEM, dimension_prompt, max_tokens=200)
         if raw.startswith("```"):
             raw = raw.split("```")[1]
             if raw.startswith("json"):
