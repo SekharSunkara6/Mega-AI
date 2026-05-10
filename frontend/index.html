@@ -370,54 +370,62 @@ async function submitQuery() {
     });
 
     if(!resp.ok) {
-      addEvent({agent:'system', event:'error', data: `HTTP ${resp.status} — server error`});
+      addEvent({agent:'system', event:'error', data:`HTTP ${resp.status} — server error`});
       return;
     }
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
     let buffer = '';
-
     let jobDone = false;
+
     while(true) {
       const {done, value} = await reader.read();
       if(done) break;
       buffer += decoder.decode(value, {stream:true});
       const lines = buffer.split('\n');
       buffer = lines.pop();
+
       for(const line of lines) {
-        if(line.startsWith('data:')) {
-          try {
-            const raw = line.slice(5).trim();
-            if(!raw) continue;
-            const parsed = JSON.parse(raw);
-            if(parsed.status === 'running') continue;
-            if(parsed.event === 'job_complete') {
-              jobDone = true;
-              showFinalAnswer(parsed);
-              addEvent({agent:'system', event:'job_complete',
-                data:`✓ Done! Job ID: ${parsed.job_id} — copy this for Trace Explorer`});
-              document.getElementById('nav-status-text').textContent = 'Done';
-              document.getElementById('feed-status').textContent = '✓ Completed';
-              // Auto-fill trace job ID
-              if(parsed.job_id) {
-                document.getElementById('trace-job-id').value = parsed.job_id;
-                currentJobId = parsed.job_id;
-              }
-            } else if(parsed.event === 'job_failed') {
-              addEvent({agent:'system', event:'error', data: parsed.error||'Job failed'});
-              document.getElementById('nav-status-text').textContent = 'Failed';
-              document.getElementById('feed-status').textContent = '✗ Failed';
-            } else if(parsed.event !== 'heartbeat') {
-              addEvent(parsed);
-              if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
-              if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
+        if(!line.startsWith('data:')) continue;
+        const raw = line.slice(5).trim();
+        if(!raw) continue;
+        try {
+          const parsed = JSON.parse(raw);
+          if(parsed.status === 'running') continue;
+          if(parsed.event === 'heartbeat') continue;
+
+          if(parsed.event === 'job_complete') {
+            jobDone = true;
+            const jobId = parsed.job_id;
+            const finalAnswer = parsed.final_answer;
+            if(jobId) {
+              currentJobId = jobId;
+              document.getElementById('trace-job-id').value = jobId;
             }
-          } catch(e) {}
-        }
+            showFinalAnswer({job_id: jobId, final_answer: finalAnswer});
+            addEvent({
+              agent:'system',
+              event:'job_complete',
+              data:'✓ Done! Job ID: ' + jobId + ' — check Trace Explorer tab'
+            });
+            document.getElementById('nav-status-text').textContent = 'Done';
+            document.getElementById('feed-status').textContent = '✓ Completed';
+
+          } else if(parsed.event === 'job_failed') {
+            addEvent({agent:'system', event:'error', data: parsed.error || 'Job failed'});
+            document.getElementById('nav-status-text').textContent = 'Failed';
+            document.getElementById('feed-status').textContent = '✗ Failed';
+
+          } else {
+            addEvent(parsed);
+            if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
+            if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
+          }
+        } catch(e) {}
       }
     }
-    // If stream ended without job_complete, poll for result
+
     if(!jobDone && currentJobId) {
       try {
         const tr = await fetch(`${API}/trace/${currentJobId}`);
@@ -425,15 +433,15 @@ async function submitQuery() {
           const data = await tr.json();
           if(data.final_answer) {
             showFinalAnswer({job_id: currentJobId, final_answer: data.final_answer});
-            addEvent({agent:'system', event:'job_complete',
-              data:`✓ Done! Job ID: ${currentJobId}`});
+            addEvent({agent:'system', event:'job_complete', data:'✓ Done! Job ID: ' + currentJobId});
             document.getElementById('feed-status').textContent = '✓ Completed';
           }
         }
       } catch(e) {}
     }
+
   } catch(err) {
-    addEvent({agent:'system', event:'error', data:`Connection error: ${err.message}. Server may be waking up — wait 30 seconds and try again.`});
+    addEvent({agent:'system', event:'error', data:'Connection error: ' + err.message + '. Server may be waking up — wait 30s and retry.'});
   } finally {
     btn.disabled = false;
     btn.textContent = 'Run Pipeline';
