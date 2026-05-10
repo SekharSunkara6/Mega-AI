@@ -1,12 +1,10 @@
 import json
-from anthropic import Anthropic
-from config import settings
+from llm_client import chat
 from schemas.context import SharedContext
 from core.context_manager import count_tokens
 import structlog
 
 log = structlog.get_logger()
-client = Anthropic(api_key=settings.anthropic_api_key)
 
 COMPRESSION_SYSTEM = """You compress conversational context while preserving ALL structured data.
 
