@@ -18,27 +18,6 @@
 
 ---
 
-## 📋 Table of Contents
-
-- [Overview](#-overview)
-- [Live Demo](#-live-demo)
-- [Architecture](#-architecture)
-- [Agents](#-agents)
-- [Tools](#-tools)
-- [API Endpoints](#-api-endpoints)
-- [Evaluation Pipeline](#-evaluation-pipeline)
-- [Self-Improving Loop](#-self-improving-loop)
-- [Context Budget Manager](#-context-budget-manager)
-- [Quick Start](#-quick-start)
-- [Environment Variables](#-environment-variables)
-- [Services](#-services)
-- [Known Limitations](#-known-limitations)
-- [What I Would Build Next](#-what-i-would-build-next)
-- [AI Collaboration](#-ai-collaboration)
-- [Stack](#-stack)
-
----
-
 ## 🌟 Overview
 
 Mega AI is a containerized, production-grade multi-agent LLM orchestration system that demonstrates:
