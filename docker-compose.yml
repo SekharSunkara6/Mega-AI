@@ -15,6 +15,7 @@ services:
       - ./backend:/app
       - ./frontend:/frontend
       - ./logs:/logs
+    working_dir: /app
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   worker:
@@ -27,6 +28,7 @@ services:
         condition: service_started
     volumes:
       - ./backend:/app
+    working_dir: /app
     command: celery -A worker worker --loglevel=info
 
   db:
