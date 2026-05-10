@@ -13,60 +13,45 @@
     --teal: #3dd6b5; --amber: #f0a030; --red: #e05555;
     --green: #3dcc8a; --blue: #4a9eff;
     --radius: 10px; --radius-sm: 6px;
-    --font: 'Inter', system-ui, sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; }
-
-  /* Layout */
+  body { background: var(--bg); color: var(--text); font-family: system-ui, sans-serif; min-height: 100vh; }
   .app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; overflow: hidden; }
-  .nav { display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--border);
-         background: var(--bg2); gap: 16px; }
-  .nav-logo { font-weight: 700; font-size: 18px; color: var(--purple); letter-spacing: -0.5px; }
+  .nav { display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid var(--border); background: var(--bg2); gap: 16px; }
+  .nav-logo { font-weight: 700; font-size: 18px; color: var(--purple); }
   .nav-logo span { color: var(--teal); }
   .nav-tabs { display: flex; gap: 4px; margin-left: 24px; }
-  .nav-tab { padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text2);
-             cursor: pointer; border: none; background: none; transition: all .15s; }
+  .nav-tab { padding: 6px 14px; border-radius: var(--radius-sm); font-size: 13px; color: var(--text2); cursor: pointer; border: none; background: none; transition: all .15s; }
   .nav-tab:hover { background: var(--bg3); color: var(--text); }
   .nav-tab.active { background: var(--purple3); color: var(--purple); }
   .nav-status { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text3); }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-
-  /* Main content */
   .main { display: grid; grid-template-columns: 1fr 380px; overflow: hidden; }
   .panel-left { display: flex; flex-direction: column; overflow: hidden; border-right: 1px solid var(--border); }
   .panel-right { display: flex; flex-direction: column; overflow: hidden; background: var(--bg2); }
-
-  /* Query input area */
   .query-area { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--bg2); }
-  .query-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase;
-                  letter-spacing: .8px; margin-bottom: 10px; }
+  .query-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 10px; }
   .query-input-wrap { display: flex; gap: 10px; }
-  textarea { flex: 1; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius);
-             color: var(--text); font-family: var(--font); font-size: 14px; padding: 12px 14px;
-             resize: none; outline: none; transition: border .15s; height: 72px; line-height: 1.5; }
+  textarea { flex: 1; background: var(--bg3); border: 1px solid var(--border2); border-radius: var(--radius); color: var(--text); font-family: inherit; font-size: 14px; padding: 12px 14px; resize: none; outline: none; transition: border .15s; height: 72px; line-height: 1.5; }
   textarea:focus { border-color: var(--purple); }
-  .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer;
-         font-weight: 600; font-size: 13px; transition: all .15s; }
+  .btn { padding: 10px 20px; border-radius: var(--radius); border: none; cursor: pointer; font-weight: 600; font-size: 13px; transition: all .15s; }
   .btn-primary { background: var(--purple); color: #fff; }
-  .btn-primary:hover { background: var(--purple2); transform: translateY(-1px); }
-  .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+  .btn-primary:hover { background: var(--purple2); }
+  .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
   .btn-sm { padding: 6px 12px; font-size: 12px; }
   .btn-outline { background: none; border: 1px solid var(--border2); color: var(--text2); }
   .btn-outline:hover { border-color: var(--purple); color: var(--purple); }
-
-  /* Pipeline feed */
-  .feed-header { padding: 14px 20px; border-bottom: 1px solid var(--border);
-                  display: flex; align-items: center; justify-content: space-between; }
+  .quick-queries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .quick-btn { font-size: 11px; padding: 4px 10px; border-radius: 999px; background: var(--bg3); border: 1px solid var(--border2); color: var(--text3); cursor: pointer; transition: all .15s; }
+  .quick-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple3); }
+  .feed-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
   .feed-title { font-size: 13px; font-weight: 600; color: var(--text2); }
   .feed { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; }
-  .event-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius);
-                padding: 12px 14px; animation: slideIn .2s ease; }
+  .event-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; animation: slideIn .2s ease; }
   @keyframes slideIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
   .event-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-  .agent-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px;
-                  text-transform: uppercase; letter-spacing: .6px; }
+  .agent-badge { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; letter-spacing: .6px; }
   .badge-orchestrator { background: #3d3580; color: var(--purple); }
   .badge-decomposition { background: #1a3340; color: var(--teal); }
   .badge-rag { background: #2a3020; color: var(--green); }
@@ -74,119 +59,61 @@
   .badge-synthesis { background: #1a2a3a; color: var(--blue); }
   .badge-system { background: #2a1a1a; color: var(--red); }
   .event-time { font-size: 10px; color: var(--text3); margin-left: auto; }
-  .event-body { font-size: 13px; color: var(--text2); line-height: 1.5; }
+  .event-body { font-size: 13px; color: var(--text2); line-height: 1.5; word-break: break-word; }
   .event-meta { display: flex; gap: 12px; margin-top: 8px; flex-wrap: wrap; }
-  .meta-chip { font-size: 10px; padding: 2px 8px; border-radius: 999px;
-               background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+  .meta-chip { font-size: 10px; padding: 2px 8px; border-radius: 999px; background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
   .meta-chip.green { color: var(--green); border-color: #1a3a2a; background: #0d2018; }
   .meta-chip.amber { color: var(--amber); border-color: #3a2a00; background: #1a1200; }
-  .meta-chip.red   { color: var(--red);   border-color: #3a1a1a; background: #1a0a0a; }
-
-  /* Answer section */
+  .meta-chip.red { color: var(--red); border-color: #3a1a1a; background: #1a0a0a; }
   .answer-wrap { padding: 20px; border-top: 1px solid var(--border); background: var(--bg2); max-height: 280px; overflow-y: auto; }
-  .answer-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase;
-                   letter-spacing: .8px; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .answer-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
   .answer-text { font-size: 14px; line-height: 1.7; color: var(--text); }
-  .provenance { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
-  .provenance-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; color: var(--text3);
-                      padding: 4px 0; border-bottom: 1px solid var(--border); }
-  .prov-sentence { flex: 1; }
-  .prov-source { font-weight: 600; color: var(--purple); white-space: nowrap; }
-
-  /* Right panel */
   .panel-section { padding: 16px 18px; border-bottom: 1px solid var(--border); }
-  .panel-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase;
-                          letter-spacing: .8px; margin-bottom: 12px; }
-
-  /* Budget bars */
+  .panel-section-title { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 12px; }
   .budget-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
   .budget-name { font-size: 11px; color: var(--text2); width: 90px; flex-shrink: 0; }
   .budget-bar { flex: 1; height: 5px; background: var(--bg3); border-radius: 999px; overflow: hidden; }
   .budget-fill { height: 100%; border-radius: 999px; transition: width .4s ease; }
   .budget-pct { font-size: 10px; color: var(--text3); width: 32px; text-align: right; }
-
-  /* Routing plan */
-  .route-step { display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-                background: var(--bg3); border-radius: var(--radius-sm); margin-bottom: 6px; }
-  .route-num { width: 20px; height: 20px; border-radius: 50%; background: var(--purple3);
-               color: var(--purple); font-size: 10px; font-weight: 700;
-               display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .route-step { display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: var(--bg3); border-radius: var(--radius-sm); margin-bottom: 6px; }
+  .route-num { width: 20px; height: 20px; border-radius: 50%; background: var(--purple3); color: var(--purple); font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .route-info { flex: 1; }
   .route-agent { font-size: 12px; font-weight: 600; color: var(--text); }
   .route-reason { font-size: 11px; color: var(--text3); margin-top: 2px; }
-  .route-status { font-size: 10px; }
-  .status-pending  { color: var(--text3); }
-  .status-running  { color: var(--amber); }
-  .status-done     { color: var(--green); }
-
-  /* Eval summary */
+  .route-status { font-size: 14px; }
+  .status-pending { color: var(--text3); }
+  .status-running { color: var(--amber); }
+  .status-done { color: var(--green); }
+  .tool-entry { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+  .tool-name { color: var(--amber); font-weight: 600; }
   .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .score-cell { background: var(--bg3); border-radius: var(--radius-sm); padding: 10px; }
   .score-dim { font-size: 10px; color: var(--text3); margin-bottom: 4px; }
   .score-val { font-size: 18px; font-weight: 700; }
   .score-high { color: var(--green); }
-  .score-mid  { color: var(--amber); }
-  .score-low  { color: var(--red); }
-
-  /* Tool log */
-  .tool-entry { display: flex; align-items: center; gap: 8px; padding: 7px 0;
-                border-bottom: 1px solid var(--border); font-size: 12px; }
-  .tool-name { color: var(--amber); font-weight: 600; }
-  .tool-latency { color: var(--text3); margin-left: auto; }
-  .tool-status-ok  { color: var(--green); }
-  .tool-status-err { color: var(--red); }
-
-  /* Quick queries */
-  .quick-queries { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-  .quick-btn { font-size: 11px; padding: 4px 10px; border-radius: 999px;
-               background: var(--bg3); border: 1px solid var(--border2); color: var(--text3);
-               cursor: pointer; transition: all .15s; }
-  .quick-btn:hover { border-color: var(--purple); color: var(--purple); background: var(--purple3); }
-
-  /* Eval panel */
-  .eval-panel { display: none; flex-direction: column; overflow: hidden; }
-  .eval-panel.active { display: flex; }
-  .eval-content { flex: 1; overflow-y: auto; padding: 24px; }
-
-  /* Tabs */
-  .view { display: none; flex-direction: column; overflow: hidden; height: 100%; }
-  .view.active { display: flex; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 999px; }
-
-  /* Violations */
-  .violation-banner { background: #1a0808; border: 1px solid #3a1515; border-radius: var(--radius-sm);
-                       padding: 8px 12px; font-size: 12px; color: var(--red); margin-bottom: 8px; }
-
-  /* Loading spinner */
-  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--purple);
-             border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* Eval table */
+  .score-mid { color: var(--amber); }
+  .score-low { color: var(--red); }
   .eval-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .eval-table th { text-align: left; padding: 8px 10px; color: var(--text3); font-weight: 600;
-                    border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
+  .eval-table th { text-align: left; padding: 8px 10px; color: var(--text3); font-weight: 600; border-bottom: 1px solid var(--border); font-size: 10px; text-transform: uppercase; }
   .eval-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text2); }
   .eval-table tr:hover td { background: var(--bg3); }
   .cat-badge { font-size: 9px; padding: 2px 6px; border-radius: 999px; font-weight: 700; }
-  .cat-baseline    { background: #0d2018; color: var(--green); }
-  .cat-ambiguous   { background: #1a1200; color: var(--amber); }
+  .cat-baseline { background: #0d2018; color: var(--green); }
+  .cat-ambiguous { background: #1a1200; color: var(--amber); }
   .cat-adversarial { background: #1a0a0a; color: var(--red); }
-
-  /* empty state */
-  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center;
-           height: 100%; color: var(--text3); gap: 8px; }
+  .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text3); gap: 8px; }
   .empty-icon { font-size: 36px; opacity: .3; }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--purple); border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .view { display: none; flex-direction: column; overflow: hidden; height: 100%; }
+  .view.active { display: flex; }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 999px; }
 </style>
 </head>
 <body>
 <div class="app">
-
-  <!-- Nav -->
   <nav class="nav">
     <div class="nav-logo">Mega<span>AI</span></div>
     <div class="nav-tabs">
@@ -200,16 +127,14 @@
     </div>
   </nav>
 
-  <!-- Query Pipeline View -->
+  <!-- Query View -->
   <div class="view active" id="view-query">
     <div class="main">
-
-      <!-- Left: feed + answer -->
       <div class="panel-left">
         <div class="query-area">
           <div class="query-label">Query</div>
           <div class="query-input-wrap">
-            <textarea id="query-input" placeholder="Ask anything... try 'Explain how neural networks learn' or use a quick query below"></textarea>
+            <textarea id="query-input" placeholder="Ask anything..."></textarea>
             <div style="display:flex;flex-direction:column;gap:8px">
               <button class="btn btn-primary" id="submit-btn" onclick="submitQuery()">Run Pipeline</button>
               <button class="btn btn-outline btn-sm" onclick="clearFeed()">Clear</button>
@@ -217,56 +142,32 @@
           </div>
           <div class="quick-queries" id="quick-queries"></div>
         </div>
-
         <div class="feed-header">
           <span class="feed-title">Agent Activity Feed</span>
           <span id="feed-status" style="font-size:12px;color:var(--text3)">—</span>
         </div>
         <div class="feed" id="feed">
-          <div class="empty">
-            <div class="empty-icon">⚡</div>
-            <div>Submit a query to start the pipeline</div>
-          </div>
+          <div class="empty"><div class="empty-icon">⚡</div><div>Submit a query to start the pipeline</div></div>
         </div>
-
         <div class="answer-wrap" id="answer-wrap" style="display:none">
-          <div class="answer-label">
-            <span>Final Answer</span>
-            <span id="answer-confidence" style="font-size:10px;padding:2px 8px;border-radius:999px;background:var(--bg3);color:var(--green)"></span>
-          </div>
+          <div class="answer-label">Final Answer</div>
           <div class="answer-text" id="answer-text"></div>
-          <div class="provenance" id="provenance-wrap" style="display:none">
-            <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Provenance Map</div>
-            <div id="provenance-list"></div>
-          </div>
         </div>
       </div>
 
-      <!-- Right panel -->
       <div class="panel-right">
-
-        <!-- Budget -->
         <div class="panel-section">
           <div class="panel-section-title">Context Budget</div>
           <div id="budget-bars"></div>
         </div>
-
-        <!-- Routing plan -->
         <div class="panel-section">
           <div class="panel-section-title">Routing Plan</div>
-          <div id="routing-plan">
-            <div style="font-size:12px;color:var(--text3)">Waiting for orchestrator...</div>
-          </div>
+          <div id="routing-plan"><div style="font-size:12px;color:var(--text3)">Waiting for orchestrator...</div></div>
         </div>
-
-        <!-- Tool log -->
         <div class="panel-section" style="flex:1;overflow-y:auto">
           <div class="panel-section-title">Tool Calls</div>
-          <div id="tool-log">
-            <div style="font-size:12px;color:var(--text3)">No tool calls yet</div>
-          </div>
+          <div id="tool-log"><div style="font-size:12px;color:var(--text3)">No tool calls yet</div></div>
         </div>
-
       </div>
     </div>
   </div>
@@ -284,22 +185,14 @@
           <button class="btn btn-primary btn-sm" onclick="triggerEval()">Run Eval</button>
         </div>
       </div>
-
       <div id="eval-scores" style="margin-bottom:24px">
-        <div style="font-size:13px;color:var(--text3)">Loading eval results...</div>
+        <div style="font-size:13px;color:var(--text3)">Click Run Eval to start evaluation.</div>
       </div>
-
-      <div style="font-size:14px;font-weight:600;margin-bottom:12px">Test Case Results</div>
-      <div id="eval-table-wrap">
-        <div style="font-size:13px;color:var(--text3)">No eval data yet. Click Run Eval.</div>
-      </div>
-
-      <!-- Prompt rewrite section -->
+      <div style="font-size:14px;font-weight:600;margin-bottom:12px">Results by Category</div>
+      <div id="eval-table-wrap"><div style="font-size:13px;color:var(--text3)">No eval data yet.</div></div>
       <div style="margin-top:24px">
         <div style="font-size:14px;font-weight:600;margin-bottom:12px">Pending Prompt Rewrites</div>
-        <div id="rewrite-list">
-          <div style="font-size:13px;color:var(--text3)">No pending rewrites.</div>
-        </div>
+        <div id="rewrite-list"><div style="font-size:13px;color:var(--text3)">No pending rewrites.</div></div>
       </div>
     </div>
   </div>
@@ -314,11 +207,10 @@
       <div class="empty"><div class="empty-icon">🔍</div><div>Enter a Job ID to explore its execution trace</div></div>
     </div>
   </div>
-
 </div>
 
 <script>
-const API = 'http://localhost:8000';
+const API = 'https://mega-ai-llm.onrender.com';
 let currentJobId = null;
 
 const QUICK = [
@@ -335,11 +227,11 @@ const AGENT_COLORS = {
   rag:'rag', critique:'critique', synthesis:'synthesis', system:'system'
 };
 
-// Init
+const AGENT_MAX = {orchestrator:8000, decomposition:4000, rag:6000, critique:4000, synthesis:6000};
+
 document.addEventListener('DOMContentLoaded', () => {
   renderQuickQueries();
   initBudgetBars();
-  loadEval();
 });
 
 function renderQuickQueries() {
@@ -359,14 +251,14 @@ function switchTab(tab) {
     t.classList.toggle('active', tabs[i] === tab);
   });
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById(`view-${tab}`).classList.add('active');
+  document.getElementById('view-'+tab).classList.add('active');
   if(tab === 'eval') loadEval();
 }
 
 function initBudgetBars() {
   const agents = {orchestrator:8000, decomposition:4000, rag:6000, critique:4000, synthesis:6000};
   const wrap = document.getElementById('budget-bars');
-  wrap.innerHTML = Object.entries(agents).map(([name, max]) => `
+  wrap.innerHTML = Object.entries(agents).map(([name]) => `
     <div class="budget-row">
       <div class="budget-name">${name}</div>
       <div class="budget-bar"><div class="budget-fill" id="budget-${name}" style="width:100%;background:var(--green)"></div></div>
@@ -375,43 +267,31 @@ function initBudgetBars() {
   `).join('');
 }
 
-const AGENT_MAX = {orchestrator:8000, decomposition:4000, rag:6000, critique:4000, synthesis:6000};
-
 function updateBudget(agent, remaining) {
   const max = AGENT_MAX[agent];
   if(!max) return;
   const pct = Math.round((remaining/max)*100);
-  const fill = document.getElementById(`budget-${agent}`);
-  const label = document.getElementById(`budget-pct-${agent}`);
-  if(fill) {
-    fill.style.width = pct + '%';
-    fill.style.background = pct > 60 ? 'var(--green)' : pct > 30 ? 'var(--amber)' : 'var(--red)';
-  }
-  if(label) label.textContent = pct + '%';
+  const fill = document.getElementById('budget-'+agent);
+  const label = document.getElementById('budget-pct-'+agent);
+  if(fill) { fill.style.width = pct+'%'; fill.style.background = pct > 60 ? 'var(--green)' : pct > 30 ? 'var(--amber)' : 'var(--red)'; }
+  if(label) label.textContent = pct+'%';
 }
 
 function addEvent(data) {
   const feed = document.getElementById('feed');
-  // Remove empty state
   const empty = feed.querySelector('.empty');
   if(empty) empty.remove();
-
   const agent = data.agent || 'system';
   const now = new Date().toLocaleTimeString();
-
   const card = document.createElement('div');
   card.className = 'event-card';
-
+  if(data.budget_remaining != null) updateBudget(agent, data.budget_remaining);
   let metaChips = '';
-  if(data.budget_remaining != null) {
-    updateBudget(agent, data.budget_remaining);
-  }
   if(data.hops) metaChips += `<span class="meta-chip green">↳ ${data.hops} hops</span>`;
   if(data.citations) metaChips += `<span class="meta-chip green">${data.citations} citations</span>`;
-  if(data.flagged_claims) metaChips += `<span class="meta-chip ${data.flagged_claims > 0 ? 'amber':'green'}">${data.flagged_claims} flags</span>`;
+  if(data.flagged_claims) metaChips += `<span class="meta-chip amber">${data.flagged_claims} flags</span>`;
   if(data.contradictions) metaChips += `<span class="meta-chip amber">${data.contradictions} contradictions</span>`;
   if(data.sub_tasks) metaChips += `<span class="meta-chip">${data.sub_tasks.length} tasks</span>`;
-
   card.innerHTML = `
     <div class="event-header">
       <span class="agent-badge badge-${AGENT_COLORS[agent]||'system'}">${agent}</span>
@@ -423,11 +303,7 @@ function addEvent(data) {
   `;
   feed.appendChild(card);
   feed.scrollTop = feed.scrollHeight;
-
-  // Handle routing plan
   if(data.plan) renderRoutingPlan(data.plan);
-  // Handle tool info
-  if(data.event === 'tool_call') appendToolLog(data);
 }
 
 function renderRoutingPlan(plan) {
@@ -445,36 +321,15 @@ function renderRoutingPlan(plan) {
 }
 
 function updateRouteStatus(agent, status) {
-  const el = document.getElementById(`rs-${agent}`);
+  const el = document.getElementById('rs-'+agent);
   if(!el) return;
-  el.className = `route-status status-${status}`;
+  el.className = 'route-status status-'+status;
   el.textContent = status === 'done' ? '✓' : status === 'running' ? '●' : '○';
-}
-
-function appendToolLog(data) {
-  const wrap = document.getElementById('tool-log');
-  if(wrap.querySelector('div[style]')) wrap.innerHTML = '';
-  const entry = document.createElement('div');
-  entry.className = 'tool-entry';
-  entry.innerHTML = `
-    <span class="tool-name">${data.tool||'?'}</span>
-    <span style="color:var(--text3)">${data.agent||''}</span>
-    <span class="${data.accepted ? 'tool-status-ok':'tool-status-err'}" style="margin-left:auto">
-      ${data.accepted ? '✓ accepted' : '✗ rejected'}
-    </span>
-    <span class="tool-latency">${(data.latency||0).toFixed(0)}ms</span>
-  `;
-  wrap.appendChild(entry);
 }
 
 function showFinalAnswer(data) {
   document.getElementById('answer-wrap').style.display = 'block';
   document.getElementById('answer-text').textContent = data.final_answer || '(no answer)';
-
-  if(data.provenance_entries > 0) {
-    document.getElementById('provenance-wrap').style.display = 'block';
-  }
-
   currentJobId = data.job_id;
   document.getElementById('trace-job-id').value = data.job_id || '';
 }
@@ -482,17 +337,14 @@ function showFinalAnswer(data) {
 async function submitQuery() {
   const query = document.getElementById('query-input').value.trim();
   if(!query) return;
-
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span>';
-
   document.getElementById('feed').innerHTML = '';
   document.getElementById('answer-wrap').style.display = 'none';
   document.getElementById('routing-plan').innerHTML = '<div style="font-size:12px;color:var(--text3)">Planning...</div>';
   document.getElementById('tool-log').innerHTML = '<div style="font-size:12px;color:var(--text3)">No tool calls yet</div>';
   initBudgetBars();
-
   document.getElementById('nav-status-text').textContent = 'Running...';
   document.getElementById('feed-status').textContent = 'Pipeline active';
 
@@ -502,6 +354,11 @@ async function submitQuery() {
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({query})
     });
+
+    if(!resp.ok) {
+      addEvent({agent:'system', event:'error', data: `HTTP ${resp.status} — server error`});
+      return;
+    }
 
     const reader = resp.body.getReader();
     const decoder = new TextDecoder();
@@ -513,32 +370,34 @@ async function submitQuery() {
       buffer += decoder.decode(value, {stream:true});
       const lines = buffer.split('\n');
       buffer = lines.pop();
-
       for(const line of lines) {
         if(line.startsWith('data:')) {
           try {
             const parsed = JSON.parse(line.slice(5).trim());
+            if(parsed.status === 'running') continue;
             addEvent(parsed);
             if(parsed.agent) updateRouteStatus(parsed.agent, 'running');
             if(parsed.event === 'output') updateRouteStatus(parsed.agent, 'done');
             if(parsed.event === 'job_complete') {
               showFinalAnswer(parsed);
               document.getElementById('nav-status-text').textContent = 'Done';
-              document.getElementById('feed-status').textContent = `✓ Completed`;
+              document.getElementById('feed-status').textContent = '✓ Completed';
             }
             if(parsed.event === 'job_failed') {
-              addEvent({agent:'system', event:'error', data: parsed.error || 'Job failed'});
+              addEvent({agent:'system', event:'error', data: parsed.error||'Job failed'});
               document.getElementById('nav-status-text').textContent = 'Failed';
+              document.getElementById('feed-status').textContent = '✗ Failed';
             }
           } catch(e) {}
         }
       }
     }
   } catch(err) {
-    addEvent({agent:'system', event:'error', data: err.message});
+    addEvent({agent:'system', event:'error', data:`Connection error: ${err.message}. Server may be waking up — wait 30 seconds and try again.`});
   } finally {
     btn.disabled = false;
     btn.textContent = 'Run Pipeline';
+    document.getElementById('nav-status-text').textContent = 'Ready';
   }
 }
 
@@ -550,19 +409,14 @@ function clearFeed() {
   initBudgetBars();
 }
 
-// ── Eval ──────────────────────────────────────────────────────────────────────
-
 async function loadEval() {
   try {
     const resp = await fetch(`${API}/eval/latest`);
-    if(!resp.ok) {
-      document.getElementById('eval-scores').innerHTML = '<div style="font-size:13px;color:var(--text3)">No eval data. Click Run Eval.</div>';
-      return;
-    }
+    if(!resp.ok) { document.getElementById('eval-scores').innerHTML = '<div style="font-size:13px;color:var(--text3)">No eval data. Click Run Eval.</div>'; return; }
     const data = await resp.json();
     renderEvalScores(data);
   } catch(e) {
-    document.getElementById('eval-scores').innerHTML = `<div style="color:var(--red);font-size:13px">Error loading eval: ${e.message}</div>`;
+    document.getElementById('eval-scores').innerHTML = `<div style="color:var(--red);font-size:13px">Error: ${e.message}</div>`;
   }
 }
 
@@ -570,110 +424,56 @@ function scoreColor(s) { return s >= 0.7 ? 'score-high' : s >= 0.4 ? 'score-mid'
 
 function renderEvalScores(data) {
   const dims = ['correctness','citation','contradiction','tool_efficiency','budget_compliance','critique_agreement'];
-  const labels = {'correctness':'Correctness','citation':'Citation','contradiction':'Contradiction','tool_efficiency':'Tool Eff.','budget_compliance':'Budget','critique_agreement':'Critique Agr.'};
-
-  const scoresHtml = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-      <div style="font-size:13px;color:var(--text3)">Run: <span style="color:var(--text2)">${data.run_id?.slice(0,8)}...</span> · ${data.total_cases} cases</div>
-    </div>
+  const labels = {correctness:'Correctness',citation:'Citation',contradiction:'Contradiction',tool_efficiency:'Tool Eff.',budget_compliance:'Budget',critique_agreement:'Critique Agr.'};
+  document.getElementById('eval-scores').innerHTML = `
+    <div style="margin-bottom:12px;font-size:13px;color:var(--text3)">Run: ${(data.run_id||'').slice(0,8)}... · ${data.total_cases} cases</div>
     <div class="score-grid">
-      ${dims.map(d => {
-        const s = data.overall_scores?.[d] ?? 0;
-        return `<div class="score-cell">
-          <div class="score-dim">${labels[d]}</div>
-          <div class="score-val ${scoreColor(s)}">${(s*100).toFixed(0)}%</div>
-        </div>`;
-      }).join('')}
-    </div>
-  `;
-
-  document.getElementById('eval-scores').innerHTML = scoresHtml;
-
-  // Category breakdown
-  const cats = data.by_category || {};
-  let tableHtml = `<table class="eval-table"><thead><tr>
-    <th>Category</th>${dims.map(d=>`<th>${labels[d]}</th>`).join('')}
-  </tr></thead><tbody>`;
-
+      ${dims.map(d => { const s = data.overall_scores?.[d]??0; return `<div class="score-cell"><div class="score-dim">${labels[d]}</div><div class="score-val ${scoreColor(s)}">${(s*100).toFixed(0)}%</div></div>`; }).join('')}
+    </div>`;
+  const cats = data.by_category||{};
+  let html = `<table class="eval-table"><thead><tr><th>Category</th>${dims.map(d=>`<th>${labels[d]}</th>`).join('')}</tr></thead><tbody>`;
   for(const [cat, scores] of Object.entries(cats)) {
-    tableHtml += `<tr>
-      <td><span class="cat-badge cat-${cat}">${cat}</span></td>
-      ${dims.map(d => {
-        const s = scores[d]?.score ?? 0;
-        return `<td class="${scoreColor(s)}">${(s*100).toFixed(0)}%</td>`;
-      }).join('')}
-    </tr>`;
+    html += `<tr><td><span class="cat-badge cat-${cat}">${cat}</span></td>${dims.map(d=>{ const s=scores[d]?.score??0; return `<td class="${scoreColor(s)}">${(s*100).toFixed(0)}%</td>`; }).join('')}</tr>`;
   }
-  tableHtml += '</tbody></table>';
-  document.getElementById('eval-table-wrap').innerHTML = tableHtml;
+  document.getElementById('eval-table-wrap').innerHTML = html + '</tbody></table>';
 }
 
 async function triggerEval() {
   const btn = event.target;
   btn.disabled = true; btn.textContent = 'Running...';
   try {
-    const resp = await fetch(`${API}/eval/rerun`, {method:'POST'});
-    const data = await resp.json();
-    if(resp.ok) {
-      setTimeout(() => { loadEval(); btn.disabled=false; btn.textContent='Run Eval'; }, 3000);
-    }
-  } catch(e) {
-    btn.disabled=false; btn.textContent='Run Eval';
-  }
+    await fetch(`${API}/eval/rerun`, {method:'POST'});
+    setTimeout(() => { loadEval(); btn.disabled=false; btn.textContent='Run Eval'; }, 5000);
+  } catch(e) { btn.disabled=false; btn.textContent='Run Eval'; }
 }
-
-// ── Trace ─────────────────────────────────────────────────────────────────────
 
 async function loadTrace() {
   const jobId = document.getElementById('trace-job-id').value.trim();
   if(!jobId) return;
   const wrap = document.getElementById('trace-content');
   wrap.innerHTML = '<div class="empty"><span class="spinner"></span></div>';
-
   try {
     const resp = await fetch(`${API}/trace/${jobId}`);
-    if(!resp.ok) { wrap.innerHTML = `<div style="color:var(--red);padding:20px">Job not found: ${jobId}</div>`; return; }
+    if(!resp.ok) { wrap.innerHTML = `<div style="color:var(--red);padding:20px">Job not found</div>`; return; }
     const data = await resp.json();
-
-    let html = `
-      <div style="margin-bottom:20px">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:6px">QUERY</div>
-        <div style="font-size:15px;font-weight:600;margin-bottom:4px">${escHtml(data.query)}</div>
-        <div style="font-size:12px;color:var(--text3)">Status: <span style="color:${data.status==='done'?'var(--green)':'var(--red)'}">${data.status}</span> · ${data.total_events} events</div>
-      </div>
-      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">Execution Timeline</div>
-    `;
-
+    let html = `<div style="margin-bottom:20px"><div style="font-size:15px;font-weight:600;margin-bottom:4px">${escHtml(data.query)}</div><div style="font-size:12px;color:var(--text3)">Status: <span style="color:${data.status==='done'?'var(--green)':'var(--red)'}">${data.status}</span> · ${data.total_events} events</div></div>`;
     for(const ev of data.timeline) {
       const isAgent = ev.type === 'agent';
-      html += `
-        <div style="display:flex;gap:12px;margin-bottom:10px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);font-size:12px">
-          <div style="width:3px;background:${isAgent?'var(--purple)':'var(--amber)'};border-radius:999px;flex-shrink:0"></div>
-          <div style="flex:1">
-            <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
-              <span style="font-weight:600;color:${isAgent?'var(--purple)':'var(--amber)'}">${isAgent ? ev.agent_id : ev.tool_name}</span>
-              <span style="color:var(--text3)">${isAgent ? ev.event_type : `attempt ${ev.attempt}`}</span>
-              <span style="margin-left:auto;color:var(--text3)">${ev.latency_ms?.toFixed(0)}ms</span>
-              ${ev.token_count ? `<span style="color:var(--text3)">${ev.token_count} tok</span>` : ''}
-            </div>
-            ${ev.output_preview ? `<div style="color:var(--text2)">${escHtml(ev.output_preview.slice(0,120))}</div>` : ''}
-            ${ev.policy_violation ? `<div style="color:var(--red);margin-top:4px">⚠ ${escHtml(ev.policy_violation)}</div>` : ''}
+      html += `<div style="display:flex;gap:12px;margin-bottom:10px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);font-size:12px">
+        <div style="width:3px;background:${isAgent?'var(--purple)':'var(--amber)'};border-radius:999px;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px">
+            <span style="font-weight:600;color:${isAgent?'var(--purple)':'var(--amber)'}">${isAgent?ev.agent_id:ev.tool_name}</span>
+            <span style="color:var(--text3)">${isAgent?ev.event_type:'attempt '+ev.attempt}</span>
+            <span style="margin-left:auto;color:var(--text3)">${(ev.latency_ms||0).toFixed(0)}ms</span>
           </div>
-        </div>
-      `;
+          ${ev.output_preview?`<div style="color:var(--text2)">${escHtml(ev.output_preview.slice(0,120))}</div>`:''}
+          ${ev.policy_violation?`<div style="color:var(--red);margin-top:4px">⚠ ${escHtml(ev.policy_violation)}</div>`:''}
+        </div></div>`;
     }
-
-    if(data.final_answer) {
-      html += `<div style="margin-top:20px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)">
-        <div style="font-size:11px;color:var(--text3);margin-bottom:8px">FINAL ANSWER</div>
-        <div style="font-size:13px;line-height:1.6">${escHtml(data.final_answer)}</div>
-      </div>`;
-    }
-
+    if(data.final_answer) html += `<div style="margin-top:20px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)"><div style="font-size:11px;color:var(--text3);margin-bottom:8px">FINAL ANSWER</div><div style="font-size:13px;line-height:1.6">${escHtml(data.final_answer)}</div></div>`;
     wrap.innerHTML = html;
-  } catch(e) {
-    wrap.innerHTML = `<div style="color:var(--red);padding:20px">Error: ${e.message}</div>`;
-  }
+  } catch(e) { wrap.innerHTML = `<div style="color:var(--red);padding:20px">Error: ${e.message}</div>`; }
 }
 
 function escHtml(s) {
