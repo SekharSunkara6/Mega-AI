@@ -284,11 +284,5 @@ def health():
 
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
 def serve_frontend():
-    import os
-    # Try multiple paths for Docker vs local
-    paths = ["../frontend/index.html", "/frontend/index.html", "frontend/index.html"]
-    for path in paths:
-        if os.path.exists(path):
-            with open(path) as f:
-                return f.read()
-    return HTMLResponse("<h1>Mega AI API Running</h1><p>Visit <a href='/docs'>/docs</a> for API documentation.</p>")
+    with open("/app/index.html") as f:
+        return f.read()
