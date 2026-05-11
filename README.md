@@ -45,6 +45,22 @@ Mega AI is a containerized, production-grade multi-agent LLM orchestration syste
 
 ---
 
+## 📸 Screenshots
+
+### Query Pipeline — Real-time Agent Activity
+![Query Pipeline](screenshots/query-pipeline.png)
+
+### Evaluation Dashboard — 15 Test Cases × 6 Dimensions
+![Evaluation Dashboard](screenshots/eval-dashboard.png)
+
+### Trace Explorer — Full Execution Timeline
+![Trace Explorer](screenshots/trace-explorer.png)
+
+### API Documentation — 5 Endpoints
+![API Docs](screenshots/api-docs.png)
+
+---
+
 ## 🏗️ Architecture
 
 ```
