@@ -24,6 +24,7 @@ def run_eval(trigger: str = "manual", failed_ids: list = None, rewrite_id: str =
     cases = TEST_CASES  # always run all 15
     if failed_ids and len(failed_ids) > 0:
         cases = [tc for tc in TEST_CASES if tc.id in failed_ids]
+    cases = list(cases)  # ensure all 15 run
 
     results = []
     for tc in cases:
