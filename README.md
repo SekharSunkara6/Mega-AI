@@ -1,4 +1,4 @@
-# 🤖 Mega AI — Multi-Agent LLM Orchestration System
+# 🤖 Mega AI - Multi-Agent LLM Orchestration System
 
 <div align="center">
 
